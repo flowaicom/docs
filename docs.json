@@ -1,24 +1,68 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Flow AI",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#42338C",
+    "light":   "#CC66FF",     
+    "dark":    "#2E246F" 
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/favicon.png",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Flow AI",
         "groups": [
           {
-            "group": "Get Started",
+            "group": "Flow AI",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "index"
+            ]
+          }
+        ]
+      }, 
+      {
+        "tab": "Getting Started",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "getting-started/quick-start"            ]
+          } 
+        ]
+      },
+      {
+        "tab": "How-to Guides",
+        "groups": [
+            {
+            "group": "Engineer",
+            "pages": [
+              "guides/engineer/sdk-authentication",
+              "guides/engineer/get-user-info",
+              "guides/engineer/organization-management",
+              "guides/engineer/create-project",
+              "guides/engineer/manage-projects",
+              "guides/engineer/add-validators",
+              "guides/engineer/file-upload",
+              "guides/engineer/configure-pipeline",
+              "guides/engineer/batch-processing",
+              "guides/engineer/job-monitoring",
+              "guides/engineer/create-test-sets",
+              "guides/engineer/test-set-validation",
+              "guides/engineer/export-test-sets",
+              "guides/engineer/view-metrics",
+              "guides/engineer/custom-analytics",
+              "guides/engineer/export-results"
+            ]
+          },
+          {
+            "group": "Expert Validator",
+            "pages": [
+              "guides/expert-validator/sign-up",
+              "guides/expert-validator/assign-validation-tasks",
+              "guides/expert-validator/validation-interface",
+              "guides/expert-validator/track-validation-progress",
+              "guides/expert-validator/resolve-conflicts"
             ]
           },
           {
@@ -35,8 +79,25 @@
         ]
       },
       {
+        "tab": "Tutorials",
+        "groups": [
+          {
+            "group": "Engineer Tutorials", 
+            "pages": [
+              "tutorials/create-first-test-set"
+            ]
+          },
+          {
+            "group": "Expert Validator Tutorials",
+            "pages": [
+              "tutorials/expert-validator-walkthrough"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "API Reference",
-        "openapi": "https://fjodo.tailfa581.ts.net/server/api/v1/openapi.json"
+        "openapi": "https://spec.speakeasy.com/flow-ai/main/server-with-code-samples"
       }
     ],
     "global": {
@@ -45,29 +106,35 @@
           "anchor": "Documentation",
           "href": "https://mintlify.com/docs",
           "icon": "book-open-cover"
+        }, 
+        {
+          "anchor": "API Reference",
+          "href": "http://localhost:3000/api-reference",
+          "icon": "square-terminal"
+            
         },
         {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
+          "anchor": "Website",
+          "href": "https://www.flow-ai.com/",
+          "icon": "globe"
         },
         {
           "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
+          "href": "https://www.flow-ai.com/blog",
           "icon": "newspaper"
         }
       ]
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/flow-ai-logo-light.png",
+    "dark": "/logo/flow-ai-logo-dark.png"
   },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:hello@flow-ai.com"
       }
     ],
     "primary": {
@@ -78,9 +145,9 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/flowaicom",
+      "github": "https://github.com/flowaicom",
+      "linkedin": "https://www.linkedin.com/company/flowaicom"
     }
   }
 }
