@@ -1,0 +1,191 @@
+---
+title: "Load Source Data and Generate Batch"
+description: "Learn how to upload source datasets and trigger batch generation using the FlowAI SDK in a complete workflow."
+---
+
+# How to: Load Source Data and Generate Batch
+
+This guide demonstrates the complete workflow of uploading source datasets and generating a batch job using the FlowAI SDK. This combines file upload, stage creation, and automatic batch generation into a single streamlined process.
+
+## Prerequisites
+
+-   FlowAI SDK installed.
+-   Authenticated `client` and `auth_headers` (obtained via SDK login as shown in the [Authentication guide](./authentication-user-management.mdx)).
+-   A valid project ID for your FlowAI project.
+-   Source files prepared for upload.
+
+## Workflow Overview
+
+The complete workflow involves three main steps:
+
+1. **Upload Files as Stages**: Convert files to base64 and create stages for each source type
+2. **Trigger Pipeline**: Use the created stages to generate a batch job automatically
+3. **Monitor Progress**: Check job and batch status
+
+## Step 1: Prepare File Upload Function
+
+Create a helper function to encode files as base64, which is required by the FlowAI API.
+
+```python
+import base64
+from pathlib import Path
+
+def create_file_upload(file_path):
+    path = Path(file_path)
+    with open(path, 'rb') as f:
+        content_b64 = base64.b64encode(f.read()).decode('utf-8')
+    
+    return {
+        "filename": path.name,
+        "content": content_b64,
+        "content_type": "application/octet-stream"
+    }
+```
+
+## Step 2: Configure Your Files
+
+Define the files you want to upload along with their source types. FlowAI supports several source types for different kinds of data.
+
+```python
+project_id = "your_project_id_here"
+base_path = "path/to/your/data/files"
+
+files_config = [
+    {"path": f"{base_path}/agent_rules.yaml", "source_type": "AGENT_RULES"},
+    {"path": f"{base_path}/schema_rules.yaml", "source_type": "DATABASE_SCHEMA_RULES"},
+    {"path": f"{base_path}/database_schema.json", "source_type": "RELATIONAL_DB_SCHEMA"},
+    {"path": f"{base_path}/tool_definitions.json", "source_type": "TOOL_DEFINITIONS"}
+]
+```
+
+Available source types include:
+- `AGENT_RULES`: Configuration rules for AI agents
+- `DATABASE_SCHEMA_RULES`: Rules for database schema processing  
+- `RELATIONAL_DB_SCHEMA`: Database schema definitions
+- `TOOL_DEFINITIONS`: Tool and function definitions
+- `CUSTOM_DATA_FILES`: General purpose data files
+
+## Step 3: Upload Files and Create Stages
+
+Upload each file and create stages. The SDK handles base64 encoding and file validation automatically. Each file is processed and uploaded to S3 as a stage.
+
+```python
+all_created_stages = []
+
+for file_config in files_config:
+    file_path = file_config["path"]
+    source_type = file_config["source_type"]
+    
+    file_upload = create_file_upload(file_path)
+    
+    created_stages = client.stages.create(
+        files=[file_upload],
+        source_type=source_type,
+        project_id=project_id,
+        http_headers=auth_headers
+    )
+    
+    all_created_stages.extend(created_stages)
+```
+
+## Step 4: Trigger Pipeline and Generate Batch
+
+Once all stages are created, trigger the pipeline which will automatically create a job and generate the batch.
+
+```python
+job_response = client.jobs.trigger_pipeline_from_stages(
+    project_id=project_id,
+    request_body=all_created_stages,
+    http_headers=auth_headers
+)
+
+job_id = job_response.job_id
+```
+
+## Step 5: Monitor Job Progress
+
+Check the status of your batch generation job to monitor progress.
+
+```python
+job_details = client.jobs.get_details(
+    job_id=job_id,
+    http_headers=auth_headers
+)
+
+stage_list = client.stages.list(
+    limit=10,
+    http_headers=auth_headers
+)
+```
+
+## Complete Example
+
+Here's a complete example that demonstrates the entire workflow:
+
+```python
+import base64
+from pathlib import Path
+from flowai_sdk import FlowAI
+
+project_id = "your_project_id_here"
+base_path = "data"
+files_config = [
+    {"path": f"{base_path}/agent_rules.yaml", "source_type": "AGENT_RULES"},
+    {"path": f"{base_path}/schema_rules.yaml", "source_type": "DATABASE_SCHEMA_RULES"}
+]
+
+client = FlowAI()
+
+def create_file_upload(file_path):
+    path = Path(file_path)
+    with open(path, 'rb') as f:
+        content_b64 = base64.b64encode(f.read()).decode('utf-8')
+    return {
+        "filename": path.name,
+        "content": content_b64,
+        "content_type": "application/octet-stream"
+    }
+
+all_created_stages = []
+for file_config in files_config:
+    file_upload = create_file_upload(file_config["path"])
+    created_stages = client.stages.create(
+        files=[file_upload],
+        source_type=file_config["source_type"], 
+        project_id=project_id,
+        http_headers=auth_headers
+    )
+    all_created_stages.extend(created_stages)
+
+job_response = client.jobs.trigger_pipeline_from_stages(
+    project_id=project_id,
+    request_body=all_created_stages,
+    http_headers=auth_headers
+)
+
+job_id = job_response.job_id
+```
+
+## Error Handling
+
+The workflow includes built-in error handling for common issues:
+
+- **File not found**: Missing source files will be skipped with a warning
+- **Invalid file format**: The API will validate file content and reject invalid formats
+- **Authentication errors**: Ensure your `auth_headers` contain a valid session JWT
+- **Project access**: Verify you have access to the specified project ID
+
+## Next Steps
+
+-   **Monitor Job Progress**: Use the job ID to check batch generation status
+-   **Download Results**: Once batch generation is complete, download generated batches via the batches API
+-   **Generate Datasets**: Convert successful batches into datasets for further use
+-   **List Job Batches**: Use `client.jobs.list_job_batches_for_job()` to see all batches for a job
+
+## Related References
+
+(Update these URLs when your Mintlify API documentation is live)
+-   [Stages API Reference](/api-reference/stages#create_stages_for_project_stages__post)
+-   [Jobs API Reference](/api-reference/jobs#trigger_pipeline_from_stages_jobs_trigger_pipeline_from_stages_post)
+-   [Authentication Guide](./authentication-user-management.mdx)
+-   [Manage Projects Guide](./manage-projects.mdx) 

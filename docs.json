@@ -38,42 +38,15 @@
             "group": "Engineer",
             "pages": [
               "guides/engineer/sdk-authentication",
-              "guides/engineer/get-user-info",
-              "guides/engineer/organization-management",
-              "guides/engineer/create-project",
               "guides/engineer/manage-projects",
-              "guides/engineer/add-validators",
-              "guides/engineer/file-upload",
-              "guides/engineer/configure-pipeline",
-              "guides/engineer/batch-processing",
-              "guides/engineer/job-monitoring",
-              "guides/engineer/create-test-sets",
-              "guides/engineer/test-set-validation",
-              "guides/engineer/export-test-sets",
-              "guides/engineer/view-metrics",
-              "guides/engineer/custom-analytics",
-              "guides/engineer/export-results"
+              "guides/engineer/upload-files-generate-batch",
+              "guides/engineer/manage-validations"
             ]
           },
           {
             "group": "Expert Validator",
             "pages": [
-              "guides/expert-validator/sign-up",
-              "guides/expert-validator/assign-validation-tasks",
-              "guides/expert-validator/validation-interface",
-              "guides/expert-validator/track-validation-progress",
-              "guides/expert-validator/resolve-conflicts"
-            ]
-          },
-          {
-            "group": "Essentials",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/settings",
-              "essentials/navigation",
-              "essentials/reusable-snippets"
+              "guides/expert-validator/validator-guide"
             ]
           }
         ]
@@ -103,11 +76,6 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        }, 
-        {
           "anchor": "API Reference",
           "href": "http://localhost:3000/api-reference",
           "icon": "square-terminal"
@@ -136,12 +104,7 @@
         "label": "Support",
         "href": "mailto:hello@flow-ai.com"
       }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
+    ]
   },
   "footer": {
     "socials": {

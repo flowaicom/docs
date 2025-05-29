@@ -1,32 +1,149 @@
 ---
 title: "Manage Projects"
-description: "Update project settings, configurations, and manage existing evaluation projects."
+description: "Learn how to manage projects and add validators using the FlowAI SDK."
 ---
 
-## Overview
+# How to: Manage Projects
 
-[Placeholder: Project management overview]
+This guide shows how to manage projects in FlowAI using the SDK. Ensure you are authenticated as shown in the [Authentication and Manage Your Information guide](./sdk-authentication.mdx).
 
-## Updating Project Settings
+## Prerequisites
 
-### Basic Updates
-[Placeholder: Code examples for updating project properties]
+-   FlowAI SDK installed.
+-   Authenticated `client` and `auth_headers` (obtained via SDK login).
+-   Import project models for creating and updating projects:
+    ```python
+    from flowai_sdk.models import ProjectCreate, ProjectUpdate
+    ```
 
-### Configuration Changes
-[Placeholder: How to modify project configurations]
+## Create a Project
 
-## Project Status Management
+To create a new project, you will use a `ProjectCreate` model that specifies the project's `name` and an optional `description`. The `userId` is automatically associated with your authenticated user.
 
-[Placeholder: Managing project lifecycle and status]
+```python
+new_project_data = ProjectCreate(
+    name="My New SDK Project",
+    description="This project was created for SDK demonstration."
+)
 
-## Project Permissions
+created_project = client.projects.create(
+    request_body=new_project_data, 
+    http_headers=auth_headers
+)
+```
 
-[Placeholder: Managing access and permissions]
+The `created_project` is a `ProjectResponse` object containing details like `id`, `name`, `description`, `user_id`, `is_active`, `created_at`, and `updated_at`. You can access the project ID with `created_project.id`.
 
-## Archiving Projects
+## List Projects
 
-[Placeholder: How to archive or delete projects]
+Retrieve a list of your projects. The API supports pagination (`limit`, `offset`) and filtering by `status` (e.g., 'active', 'all', 'archived'). The response is a `ProjectListResponse` object.
 
-## Best Practices
+```python
+project_list_response = client.projects.list(http_headers=auth_headers)
+```
 
-[Placeholder: Recommended project management practices] 
+For custom pagination or to include all projects:
+
+```python
+project_list_response = client.projects.list(
+    status="all", 
+    limit=20, 
+    offset=0, 
+    http_headers=auth_headers
+)
+```
+
+Access the list of projects and pagination details with `project_list_response.projects` and `project_list_response.pagination`.
+
+## Get a Specific Project
+
+Fetch details for a single project using its `project_id`. The response is a `ProjectResponse` object.
+
+```python
+project_id_to_get = "your_project_id_here"
+
+project_details = client.projects.get(
+    project_id=project_id_to_get, 
+    http_headers=auth_headers
+)
+```
+
+Replace `"your_project_id_here"` with an actual Project ID.
+
+## Update a Project
+
+Modify the `name` or `description` of an existing project using a `ProjectUpdate` model. This corresponds to a `PATCH` request, so only fields you want to change need to be included in the model.
+
+```python
+project_id_to_update = "your_project_id_here"
+
+update_payload = ProjectUpdate(
+    name="My Project - Updated Name",
+    description="This project description has been updated via SDK."
+)
+
+updated_project_details = client.projects.update(
+    project_id=project_id_to_update,
+    request_body=update_payload,
+    http_headers=auth_headers
+)
+```
+
+To update only the description:
+
+```python
+update_payload_desc_only = ProjectUpdate(description="New description only.")
+
+updated_project_details = client.projects.update(
+    project_id=project_id_to_update,
+    request_body=update_payload_desc_only,
+    http_headers=auth_headers
+)
+```
+
+The `updated_project_details` is a `ProjectResponse` object with the modified project details.
+
+## Archive a Project
+
+Archive a project to mark it as inactive (`is_active: false`). This is a soft delete. The response is a `ProjectArchiveResponse` object.
+
+```python
+project_id_to_archive = "your_project_id_here"
+
+archive_response = client.projects.archive(
+    project_id=project_id_to_archive, 
+    http_headers=auth_headers
+)
+```
+
+The `archive_response` contains the `id` and the new `is_active` status (false).
+
+## Delete a Project
+
+Permanently delete a project. The API requires the project to be archived first. This action is irreversible.
+
+```python
+project_id_to_delete = "your_archived_project_id_here"
+
+client.projects.delete(
+    project_id=project_id_to_delete, 
+    http_headers=auth_headers
+)
+```
+
+Replace `"your_archived_project_id_here"` with the actual ID of an archived project. A successful deletion usually returns no content from the API (HTTP 204 status).
+
+## Next Steps
+
+-   **Load Data Sources**: Learn how to [Load Data Sources](./load-data-sources.mdx) (Placeholder).
+-   **Generate a Batch**: Discover how to [Generate a Batch Job](./generate-batch-job.mdx) (Placeholder).
+
+## Related References
+
+(Update these URLs when your Mintlify API documentation is live)
+-   [Projects API Reference (Create)](/api-reference/projects#create_project_projects__post)
+-   [Projects API Reference (List)](/api-reference/projects#list_projects_projects__get)
+-   [Projects API Reference (Get)](/api-reference/projects#get_project_projects__project_id__get)
+-   [Projects API Reference (Update)](/api-reference/projects#update_project_projects__project_id__patch)
+-   [Projects API Reference (Archive)](/api-reference/projects#archive_project_projects__project_id__archive_post)
+-   [Projects API Reference (Delete)](/api-reference/projects#delete_project_projects__project_id__delete) 

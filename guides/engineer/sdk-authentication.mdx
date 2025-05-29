@@ -1,31 +1,106 @@
 ---
-title: "SDK Authentication"
-description: "Learn how to authenticate the Flow AI SDK with API keys and set up secure access to the platform."
+title: "Authenticate and Manage Your Information"
+description: "Learn how to authenticate with the FlowAI API and manage your user account. Covers API key setup, user profile management."
 ---
 
-## Overview
+# How to: Authenticate and Manage Your User Information
 
-[Placeholder: Brief overview of authentication process]
+This guide shows you how to connect to the FlowAI API using your API key and manage your user account details.
 
 ## Prerequisites
 
-[Placeholder: List required prerequisites]
+-   You have a FlowAI account and a valid API key.
+-   The FlowAI SDK is installed: `pip install flowai-sdk`
+-   (Optional) `python-dotenv` for managing environment variables: `pip install python-dotenv`
 
-## Steps
+## Authentication Flow Overview
 
-### 1. Obtain API Key
-[Placeholder: Steps to get API key]
+Authenticating with the FlowAI API involves two main steps:
+1.  **Login with API Key**: You exchange your long-lived `FLOWAI_API_KEY` for a temporary **session JWT (JSON Web Token)**.
+2.  **Use Session Token**: This session JWT is then used to authenticate all subsequent API calls for the duration of the session.
 
-### 2. Configure SDK
-[Placeholder: Code examples for SDK configuration]
+## Step 1: Configure Environment Variables
 
-### 3. Verify Authentication
-[Placeholder: How to test authentication]
+It's best practice to store your API key as an environment variable.
 
-## Best Practices
+Create a `.env` file in your project's root directory:
 
-[Placeholder: Security recommendations]
+```bash title=".env"
+FLOWAI_API_KEY="flow_your_actual_api_key_here"
+```
 
-## Troubleshooting
+## Step 2: Initialize Client and Log In
 
-[Placeholder: Common issues and solutions] 
+Load your environment variables, initialize the SDK client, and use your API key to log in. This process exchanges your API key for a session JWT, which is then used to authorize subsequent requests.
+
+```python
+import os
+from dotenv import load_dotenv
+from flowai_sdk import FlowAI
+
+load_dotenv()
+
+api_key = os.getenv("FLOWAI_API_KEY")
+
+if not api_key:
+    raise ValueError("FLOWAI_API_KEY not found in environment variables.")
+
+client = FlowAI()
+
+login_headers = {"Authorization": f"Bearer {api_key}"}
+
+login_response = client.authentication.sdk_login(http_headers=login_headers)
+session_jwt = login_response.jwt
+
+auth_headers = {"Authorization": f"Bearer {session_jwt}"}
+```
+After these steps, `auth_headers` can be used for all protected API calls.
+
+## Step 3: Manage Your User Information
+
+Once authenticated, you can retrieve and update your user profile.
+
+### Get Your User Information
+
+Fetch your current user profile details using the `auth_headers` obtained from the login step.
+The `user` object will contain your profile information like ID, name, username, and role.
+
+```python
+# Assuming client and auth_headers are defined from the previous step
+user = client.users.get_me(http_headers=auth_headers)
+```
+
+### Update Your Profile
+
+Update your first name, last name, or username. The `updated_user_info` object will contain the new state of your user profile after the update.
+
+```python
+from flowai_sdk.models import UserUpdate
+
+# Assuming client and auth_headers are defined
+updated_user_info = client.users.update_me(
+    request_body=UserUpdate(
+        first_name="Jane",
+        last_name="Doe",
+        username="janedoe_updated"
+    ),
+    http_headers=auth_headers
+)
+```
+Only provide the fields you want to change in the `UserUpdate` model. Unspecified fields will remain unchanged.
+
+
+## Summary of Authentication Headers
+
+-   **For `sdk_login`**: Use `{"Authorization": f"Bearer {YOUR_API_KEY}"}`.
+-   **For all other authenticated calls**: Use `{"Authorization": f"Bearer {YOUR_SESSION_JWT}"}`.
+
+## Next Steps
+
+-   **Project Management**: Learn how to [Create and Manage Projects](./manage-projects.mdx)
+
+## Related References
+
+-   [Authentication API Reference](/api-reference/authentication#sdk_login) (Placeholder for Mintlify)
+-   [Users API Reference (Get Me)](/api-reference/users#get_me) (Placeholder for Mintlify)
+-   [Users API Reference (Update Me)](/api-reference/users#update_me) (Placeholder for Mintlify) 

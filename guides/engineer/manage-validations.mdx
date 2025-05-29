@@ -1,0 +1,122 @@
+---
+title: "Manage Validation Tasks"
+description: "Learn how to create validation tasks, assign validators, and manage the validation workflow using the FlowAI SDK."
+---
+
+# How to: Manage Validation Tasks
+
+This guide demonstrates how to set up and manage validation tasks for your generated batches. The validation workflow allows you to assign validators to review test cases and provide feedback on AI-generated content.
+
+## Prerequisites
+
+-   FlowAI SDK installed.
+-   Authenticated `client` and `auth_headers` (obtained via SDK login as shown in the [Authentication guide](./authentication-user-management.mdx)).
+-   A project with generated batches that need validation.
+-   Valid email addresses for validators.
+
+## Validation Workflow Overview
+
+The validation process follows this sequence:
+
+1. **Add Validators to Project**: Assign users as validators for your project
+2. **Create Validation Task**: Set up validation for a specific batch
+3. **Monitor Progress**: Track validation completion and collect results
+4. **Review Feedback**: Access detailed validation results and feedback
+
+## Step 1: Add Validators to Project
+
+First, add validators to your project. Validators are users who will review and validate the generated test cases.
+
+```python
+project_id = "your_project_id_here"
+validator_email = "validator@example.com"
+
+validator = client.projects.add_validator(
+    project_id=project_id,
+    email=validator_email,
+    http_headers=auth_headers
+)
+```
+
+## Step 2: Create Validation Task
+
+Create a validation task for a specific batch. Each batch requires its own validation task.
+
+```python
+batch_id = "your_batch_id_here"
+
+validation_task = client.batches.create_validation_task(
+    batch_id=batch_id,
+    http_headers=auth_headers
+)
+
+validation_task_id = validation_task.id
+```
+
+## Step 3: Monitor Validation Progress
+
+Check the status of validation tasks and retrieve validation results for a batch.
+
+```python
+# Check validation task status
+validation_status = client.validation_tasks.get_status(
+    validation_task_id=validation_task_id,
+    http_headers=auth_headers
+)
+
+# Get validations for the batch
+validation_results = client.batches.get_validations(
+    batch_id=batch_id,
+    http_headers=auth_headers
+)
+
+for result in validation_results:
+    test_case_id = result.test_case_id
+    is_accepted = result.is_accepted
+    feedback = result.feedback
+```
+
+## Step 4: Retrieve Detailed Validation Information
+
+Access detailed validation data using the validations API.
+
+```python
+# List all validations with filtering options
+# Note: current_user_payload should be obtained from your authentication context
+validation_results = client.validations.list(
+    current_user_payload=current_user_payload,
+    validation_task_id=validation_task_id,
+    http_headers=auth_headers
+)
+
+for validation in validation_results.data:
+    test_case_id = validation.test_case_id
+    is_accepted = validation.is_accepted
+    feedback = validation.feedback
+    validator_id = validation.validator_id
+```
+
+## Best Practices
+
+### Validator Management
+- Assign multiple validators per project for better coverage
+- Regularly review and update validator assignments
+- Use the `client.projects.list_validators()` method to see current validator assignments
+
+### Validation Tracking
+- Monitor validation task status regularly using `client.validation_tasks.get_status()`
+- Use the batch-level validation methods for overview information
+- Access detailed validation data through the `validations` API for deeper insights
+
+## Next Steps
+
+-   **Review Results**: Analyze validation feedback to improve your AI models
+
+## Related References
+
+-   [Validations API Reference](/api-reference/validations)
+-   [Validation Tasks API Reference](/api-reference/validation-tasks)
+-   [Validator Tasks API Reference](/api-reference/validator-tasks)
+-   [Batches API Reference](/api-reference/batches)
+-   [Manage Projects Guide](./manage-projects.mdx)
+-   [Load Source Data and Generate Batch Guide](./upload-datasets-and-generate-batch.mdx) 
